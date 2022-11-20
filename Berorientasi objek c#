@@ -1,0 +1,275 @@
+C# adalah bahasa pemrograman berorientasi objek. Empat prinsip dasar pemrograman berorientasi objek adalah:
+
+Abstraksi Memodelkan atribut dan interaksi entitas yang relevan sebagai kelas untuk menentukan representasi abstrak dari suatu sistem.
+Enkapsulasi Menyembunyikan status internal dan fungsionalitas objek dan hanya mengizinkan akses melalui serangkaian fungsi publik.
+Warisan Kemampuan untuk membuat abstraksi baru berdasarkan abstraksi yang ada.
+Polimorfisme Kemampuan untuk menerapkan properti atau metode yang diwariskan dengan cara yang berbeda di berbagai abstraksi.
+Dalam tutorial sebelumnya, pengantar kelasAnda melihatabstraksidanenkapsulasi. Kelas memberikan abstraksi untuk konsep rekening bank. Anda dapat memodifikasi implementasinya tanpa memengaruhi kode apa pun yang menggunakan theclass. Kedua theandclass menyediakan enkapsulasi komponen yang diperlukan untuk menggambarkan konsep-konsep tersebut dalam kode.BankAccountBankAccountBankAccountTransaction
+
+Dalam tutorial ini, Anda akan memperluas aplikasi itu untuk memanfaatkanpewarisandanpolimorfismeuntuk menambahkan fitur baru. Anda juga akan menambahkan fitur ke kelas, memanfaatkan teknikabstraksidanenkapsulasiyang Anda pelajari dalam tutorial sebelumnya.BankAccount
+
+Buat berbagai jenis akun
+Setelah membangun program ini, Anda mendapatkan permintaan untuk menambahkan fitur ke dalamnya. Ini bekerja dengan baik dalam situasi di mana hanya ada satu jenis rekening bank. Seiring waktu, kebutuhan berubah, dan jenis akun terkait diminta:
+
+Akun penghasilan bunga yang menghasilkan bunga pada akhir setiap bulan.
+Jalur kredit yang dapat memiliki saldo negatif, tetapi ketika ada saldo, ada biaya bunga setiap bulan.
+Akun kartu hadiah prabayar yang dimulai dengan satu setoran, dan hanya dapat dilunasi. Itu dapat diisi ulang sekali di awal setiap bulan.
+Semua akun yang berbeda ini mirip dengan kelas yang ditentukan dalam tutorial sebelumnya. Anda dapat menyalin kode itu, mengganti nama kelas, dan melakukan modifikasi. Teknik itu akan bekerja dalam jangka pendek, tetapi akan lebih banyak pekerjaan dari waktu ke waktu. Setiap perubahan akan disalin di semua kelas yang terpengaruh.BankAccount
+
+Sebagai gantinya, Anda dapat membuat jenis rekening bank baru yang mewarisi metode dan data dari kelas yang dibuat dalam tutorial sebelumnya. Kelas-kelas baru ini dapat memperluas kelas dengan perilaku spesifik yang diperlukan untuk setiap jenis:BankAccountBankAccount
+
+C #
+
+Menyalin
+public class InterestEarningAccount : BankAccount
+{
+}
+
+public class LineOfCreditAccount : BankAccount
+{
+}
+
+public class GiftCardAccount : BankAccount
+{
+}
+Masing-masing kelas inimewarisiperilaku bersama darikelas dasar bersama mereka, kelas. Tulis implementasi untuk fungsionalitas baru dan berbeda di setiapkelas turunan. Kelas turunan ini sudah memiliki semua perilaku yang didefinisikan dalam kelas.BankAccountBankAccount
+
+Ini adalah praktik yang baik untuk membuat setiap kelas baru dalam file sumber yang berbeda. DiVisual Studio, Anda dapat mengklik kanan pada proyek, dan memilih tambahkan kelas untuk menambahkankelasbaru dalam file baru. DiVisual Studio Code, pilihFilelaluBaruuntuk membuat file sumber baru. Di salah satu alat, beri nama file agar sesuai dengan kelas:InterestEarningAccount.cs,LineOfCreditAccount.cs, danGiftCardAccount.cs.
+
+Saat Anda membuat kelas seperti yang ditunjukkan pada sampel sebelumnya, Anda akan menemukan bahwa tidak ada kelas turunan yang dikompilasi. Konstruktor bertanggung jawab untuk menginisialisasi suatu objek. Konstruktor kelas turunan harus menginisialisasi kelas turunan, dan memberikan instruksi tentang cara menginisialisasi objek kelas dasar yang termasuk dalam kelas turunan. Inisialisasi yang tepat biasanya terjadi tanpa kode tambahan. Kelas menyatakan satu konstruktor publik dengan tanda tangan berikut:BankAccount
+
+C #
+
+Menyalin
+public BankAccount(string name, decimal initialBalance)
+Kompiler tidak menghasilkan konstruktor default saat Anda menentukan konstruktor sendiri. Itu berarti setiap kelas turunan harus secara eksplisit memanggil konstruktor ini. Anda mendeklarasikan konstruktor yang dapat meneruskan argumen ke konstruktor kelas dasar. Kode berikut menunjukkan konstruktor untuk:InterestEarningAccount
+
+C #
+
+Menyalin
+public InterestEarningAccount(string name, decimal initialBalance) : base(name, initialBalance)
+{
+}
+Parameter untuk konstruktor baru ini cocok dengan jenis parameter dan nama konstruktor kelas dasar. Anda menggunakan thesyntax untuk menunjukkan panggilan ke konstruktor kelas dasar. Beberapa kelas mendefinisikan beberapa konstruktor, dan sintaks ini memungkinkan Anda untuk memilih konstruktor kelas dasar mana yang Anda panggil. Setelah Anda memperbarui konstruktor, Anda dapat mengembangkan kode untuk setiap kelas turunan. Persyaratan untuk kelas baru dapat dinyatakan sebagai berikut:: base()
+
+Akun penghasilan bunga:
+Akan mendapatkan kredit sebesar 2% dari saldo akhir bulan.
+Jalur kredit:
+Dapat memiliki saldo negatif, tetapi tidak lebih besar dalam nilai absolut dari batas kredit.
+Akan dikenakan biaya bunga setiap bulan di mana saldo akhir bulan tidak 0.
+Akan dikenakan biaya pada setiap penarikan yang melebihi batas kredit.
+Akun kartu hadiah:
+Dapat diisi ulang dengan jumlah tertentu sekali setiap bulan, pada hari terakhir bulan tersebut.
+Anda dapat melihat bahwa ketiga jenis akun ini memiliki tindakan yang terjadi pada akhir setiap bulan. Namun, setiap jenis akun melakukan tugas yang berbeda. Anda menggunakanpolimorfismeuntuk mengimplementasikan kode ini. Buat singlemethod di kelas:virtualBankAccount
+
+C #
+
+Menyalin
+public virtual void PerformMonthEndTransactions() { }
+Kode sebelumnya menunjukkan bagaimana Anda menggunakan kata kunci untuk mendeklarasikan metode di kelas dasar yang kelas turunan dapat memberikan implementasi yang berbeda untuk. Amethod adalah metode di mana setiap kelas turunan dapat memilih untuk menerapkan kembali. Kelas turunan menggunakan thekeyword untuk menentukan implementasi baru. Biasanya Anda menyebut ini sebagai "mengesampingkan implementasi kelas dasar". Thekeyword menentukan bahwa kelas turunan dapat menimpa perilaku. Anda juga dapat mendeklarasikanmetode di mana kelas turunan harus menimpa perilaku tersebut. Kelas dasar tidak menyediakan implementasi untuk anmethod. Selanjutnya, Anda perlu menentukan implementasi untuk dua kelas baru yang telah Anda buat. Mulailah dengan:virtualvirtualoverridevirtualabstractabstractInterestEarningAccount
+
+C #
+
+Menyalin
+public override void PerformMonthEndTransactions()
+{
+    if (Balance > 500m)
+    {
+        decimal interest = Balance * 0.05m;
+        MakeDeposit(interest, DateTime.Now, "apply monthly interest");
+    }
+}
+Tambahkan kode berikut ke. Kode meniadakan saldo untuk menghitung biaya bunga positif yang ditarik dari akun:LineOfCreditAccount
+
+C #
+
+Menyalin
+public override void PerformMonthEndTransactions()
+{
+    if (Balance < 0)
+    {
+        // Negate the balance to get a positive interest charge:
+        decimal interest = -Balance * 0.07m;
+        MakeWithdrawal(interest, DateTime.Now, "Charge monthly interest");
+    }
+}
+Kelas membutuhkan dua perubahan untuk mengimplementasikan fungsionalitas akhir bulannya. Pertama, ubah konstruktor untuk menyertakan jumlah opsional untuk ditambahkan setiap bulan:GiftCardAccount
+
+C #
+
+Menyalin
+private readonly decimal _monthlyDeposit = 0m;
+
+public GiftCardAccount(string name, decimal initialBalance, decimal monthlyDeposit = 0) : base(name, initialBalance)
+    => _monthlyDeposit = monthlyDeposit;
+Konstruktor memberikan nilai default untuk nilai sehingga penelepon dapat menghilangkan tanpa setoran bulanan. Selanjutnya, ganti metode untuk menambahkan setoran bulanan, jika ditetapkan ke nilai bukan nol di konstruktor:monthlyDeposit0PerformMonthEndTransactions
+
+C #
+
+Menyalin
+public override void PerformMonthEndTransactions()
+{
+    if (_monthlyDeposit != 0)
+    {
+        MakeDeposit(_monthlyDeposit, DateTime.Now, "Add monthly deposit");
+    }
+}
+Penggantian menerapkan setoran bulanan yang ditetapkan dalam konstruktor. Tambahkan kode berikut kemethod untuk menguji perubahan ini untukdan:MainGiftCardAccountInterestEarningAccount
+
+C #
+
+Menyalin
+var giftCard = new GiftCardAccount("gift card", 100, 50);
+giftCard.MakeWithdrawal(20, DateTime.Now, "get expensive coffee");
+giftCard.MakeWithdrawal(50, DateTime.Now, "buy groceries");
+giftCard.PerformMonthEndTransactions();
+// can make additional deposits:
+giftCard.MakeDeposit(27.50m, DateTime.Now, "add some additional spending money");
+Console.WriteLine(giftCard.GetAccountHistory());
+
+var savings = new InterestEarningAccount("savings account", 10000);
+savings.MakeDeposit(750, DateTime.Now, "save some money");
+savings.MakeDeposit(1250, DateTime.Now, "Add more savings");
+savings.MakeWithdrawal(250, DateTime.Now, "Needed to pay monthly bills");
+savings.PerformMonthEndTransactions();
+Console.WriteLine(savings.GetAccountHistory());
+Verify the results. Now, add a similar set of test code for the :LineOfCreditAccount
+
+
+Copy
+    var lineOfCredit = new LineOfCreditAccount("line of credit", 0);
+    // How much is too much to borrow?
+    lineOfCredit.MakeWithdrawal(1000m, DateTime.Now, "Take out monthly advance");
+    lineOfCredit.MakeDeposit(50m, DateTime.Now, "Pay back small amount");
+    lineOfCredit.MakeWithdrawal(5000m, DateTime.Now, "Emergency funds for repairs");
+    lineOfCredit.MakeDeposit(150m, DateTime.Now, "Partial restoration on repairs");
+    lineOfCredit.PerformMonthEndTransactions();
+    Console.WriteLine(lineOfCredit.GetAccountHistory());
+When you add the preceding code and run the program, you'll see something like the following error:
+
+Console
+
+Copy
+Unhandled exception. System.ArgumentOutOfRangeException: Amount of deposit must be positive (Parameter 'amount')
+   at OOProgramming.BankAccount.MakeDeposit(Decimal amount, DateTime date, String note) in BankAccount.cs:line 42
+   at OOProgramming.BankAccount..ctor(String name, Decimal initialBalance) in BankAccount.cs:line 31
+   at OOProgramming.LineOfCreditAccount..ctor(String name, Decimal initialBalance) in LineOfCreditAccount.cs:line 9
+   at OOProgramming.Program.Main(String[] args) in Program.cs:line 29
+ Note
+
+The actual output includes the full path to the folder with the project. The folder names were omitted for brevity. Also, depending on your code format, the line numbers may be slightly different.
+
+This code fails because the assumes that the initial balance must be greater than 0. Another assumption baked into the class is that the balance can't go negative. Instead, any withdrawal that overdraws the account is rejected. Both of those assumptions need to change. The line of credit account starts at 0, and generally will have a negative balance. Also, if a customer borrows too much money, they incur a fee. The transaction is accepted, it just costs more. The first rule can be implemented by adding an optional argument to the constructor that specifies the minimum balance. The default is . The second rule requires a mechanism that enables derived classes to modify the default algorithm. In a sense, the base class "asks" the derived type what should happen when there's an overdraft. The default behavior is to reject the transaction by throwing an exception.BankAccountBankAccountBankAccount0
+
+Let's start by adding a second constructor that includes an optional parameter. This new constructor does all the actions done by the existing constructor. Also, it sets the minimum balance property. You could copy the body of the existing constructor, but that means two locations to change in the future. Instead, you can use constructor chaining to have one constructor call another. The following code shows the two constructors and the new additional field:minimumBalance
+
+C#
+
+Copy
+private readonly decimal _minimumBalance;
+
+public BankAccount(string name, decimal initialBalance) : this(name, initialBalance, 0) { }
+
+public BankAccount(string name, decimal initialBalance, decimal minimumBalance)
+{
+    Number = s_accountNumberSeed.ToString();
+    s_accountNumberSeed++;
+
+    Owner = name;
+    _minimumBalance = minimumBalance;
+    if (initialBalance > 0)
+        MakeDeposit(initialBalance, DateTime.Now, "Initial balance");
+}
+The preceding code shows two new techniques. First, the field is marked as . That means the value cannot be changed after the object is constructed. Once a is created, the can't change. Second, the constructor that takes two parameters uses as its implementation. The expression calls the other constructor, the one with three parameters. This technique allows you to have a single implementation for initializing an object even though client code can choose one of many constructors.minimumBalancereadonlyBankAccountminimumBalance: this(name, initialBalance, 0) { }: this()
+
+This implementation calls only if the initial balance is greater than . That preserves the rule that deposits must be positive, yet lets the credit account open with a balance.MakeDeposit00
+
+Now that the class has a read-only field for the minimum balance, the final change is to change the hard code to in the method:BankAccount0minimumBalanceMakeWithdrawal
+
+C#
+
+Copy
+if (Balance - amount < minimumBalance)
+After extending the class, you can modify the constructor to call the new base constructor, as shown in the following code:BankAccountLineOfCreditAccount
+
+C#
+
+Copy
+public LineOfCreditAccount(string name, decimal initialBalance, decimal creditLimit) : base(name, initialBalance, -creditLimit)
+{
+}
+Notice that the constructor changes the sign of the parameter so it matches the meaning of the parameter.LineOfCreditAccountcreditLimitminimumBalance
+
+Different overdraft rules
+The last feature to add enables the to charge a fee for going over the credit limit instead of refusing the transaction.LineOfCreditAccount
+
+One technique is to define a virtual function where you implement the required behavior. The class refactors the method into two methods. The new method does the specified action when the withdrawal takes the balance below the minimum. The existing method has the following code:BankAccountMakeWithdrawalMakeWithdrawal
+
+C#
+
+Copy
+public void MakeWithdrawal(decimal amount, DateTime date, string note)
+{
+    if (amount <= 0)
+    {
+        throw new ArgumentOutOfRangeException(nameof(amount), "Amount of withdrawal must be positive");
+    }
+    if (Balance - amount < _minimumBalance)
+    {
+        throw new InvalidOperationException("Not sufficient funds for this withdrawal");
+    }
+    var withdrawal = new Transaction(-amount, date, note);
+    allTransactions.Add(withdrawal);
+}
+Replace it with the following code:
+
+C#
+
+Copy
+public void MakeWithdrawal(decimal amount, DateTime date, string note)
+{
+    if (amount <= 0)
+    {
+        throw new ArgumentOutOfRangeException(nameof(amount), "Amount of withdrawal must be positive");
+    }
+    Transaction? overdraftTransaction = CheckWithdrawalLimit(Balance - amount < _minimumBalance);
+    Transaction? withdrawal = new(-amount, date, note);
+    _allTransactions.Add(withdrawal);
+    if (overdraftTransaction != null)
+        _allTransactions.Add(overdraftTransaction);
+}
+
+protected virtual Transaction? CheckWithdrawalLimit(bool isOverdrawn)
+{
+    if (isOverdrawn)
+    {
+        throw new InvalidOperationException("Not sufficient funds for this withdrawal");
+    }
+    else
+    {
+        return default;
+    }
+}
+The added method is , which means that it can be called only from derived classes. That declaration prevents other clients from calling the method. It's also so that derived classes can change the behavior. The return type is a . The annotation indicates that the method may return . Add the following implementation in the to charge a fee when the withdrawal limit is exceeded:protectedvirtualTransaction??nullLineOfCreditAccount
+
+C#
+
+Copy
+protected override Transaction? CheckWithdrawalLimit(bool isOverdrawn) =>
+    isOverdrawn
+    ? new Transaction(-20, DateTime.Now, "Apply overdraft fee")
+    : default;
+Override mengembalikan transaksi biaya saat akun ditarik berlebihan. Jika penarikan tidak melebihi batas, metode mengembalikan atransaction. Itu menunjukkan tidak ada biaya. Uji perubahan ini dengan menambahkan kode berikut ke yourmethod di kelas:nullMainProgram
+
+C #
+
+Menyalin
+var lineOfCredit = new LineOfCreditAccount("line of credit", 0, 2000);
+// How much is too much to borrow?
+lineOfCredit.MakeWithdrawal(1000m, DateTime.Now, "Take out monthly advance");
+lineOfCredit.MakeDeposit(50m, DateTime.Now, "Pay back small amount");
+lineOfCredit.MakeWithdrawal(5000m, DateTime.Now, "Emergency funds for repairs");
+lineOfCredit.MakeDeposit(150m, DateTime.Now, "Partial restoration on repairs");
+lineOfCredit.PerformMonthEndTransactions();
+Console.WriteLine(lineOfCredit.GetAccountHistory());
+Jalankan program, dan periksa hasilnya.
